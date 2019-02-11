@@ -64,7 +64,12 @@ AppRate = (function() {
         break;
       case 2:
         currentBtn = localeObj.yesButtonLabel;
-        navigator.notification.confirm(localeObj.message, promptForStoreRatingWindowButtonClickHandler, localeObj.title, [localeObj.cancelButtonLabel, localeObj.laterButtonLabel, localeObj.rateButtonLabel])
+	if ( localeObj.cancelButtonLabel ) {
+	  navigator.notification.confirm(localeObj.message, promptForStoreRatingWindowButtonClickHandler, localeObj.title, [localeObj.cancelButtonLabel, localeObj.laterButtonLabel, localeObj.rateButtonLabel])
+	}
+    	else {
+          navigator.notification.confirm(localeObj.message, promptForStoreRatingWindowButtonClickHandler, localeObj.title, [localeObj.laterButtonLabel, localeObj.rateButtonLabel])
+    	}
         break;
     }
     return typeof base.onButtonClicked === "function" ? base.onButtonClicked(buttonIndex, currentBtn, "AppRatingPrompt") : function(){ };
@@ -72,23 +77,41 @@ AppRate = (function() {
 
   promptForStoreRatingWindowButtonClickHandler = function(buttonIndex) {
     var base = AppRate.preferences.callbacks, currentBtn = null;
-    switch (buttonIndex) {
-      case 0:
-        updateCounter('reset');
-        break;
-      case 1:
-        currentBtn = localeObj.cancelButtonLabel;
-        updateCounter('stop');
-        break;
-      case 2:
-        currentBtn = localeObj.laterButtonLabel;
-        updateCounter('reset');
-        break;
-      case 3:
-        currentBtn = localeObj.rateButtonLabel;
-        updateCounter('stop');
-        AppRate.navigateToAppStore();
-        break;
+    if ( localeObj.cancelButtonLabel ) {
+	    switch (buttonIndex) {
+	      case 0:
+		updateCounter('reset');
+		break;
+	      case 1:
+		currentBtn = localeObj.cancelButtonLabel;
+		updateCounter('stop');
+		break;
+	      case 2:
+		currentBtn = localeObj.laterButtonLabel;
+		updateCounter('reset');
+		break;
+	      case 3:
+		currentBtn = localeObj.rateButtonLabel;
+		updateCounter('stop');
+		AppRate.navigateToAppStore();
+		break;
+	    }
+    }
+    else {
+	    switch (buttonIndex) {
+	      case 0:
+		updateCounter('reset');
+		break;
+	      case 1:
+		currentBtn = localeObj.laterButtonLabel;
+		updateCounter('reset');
+		break;
+	      case 2:
+		currentBtn = localeObj.rateButtonLabel;
+		updateCounter('stop');
+		AppRate.navigateToAppStore();
+		break;
+	    }
     }
     //This is called only in case the user clicked on a button
     typeof base.onButtonClicked === "function" ? base.onButtonClicked(buttonIndex, currentBtn, "StoreRatingPrompt") : function(){ };
@@ -149,7 +172,12 @@ AppRate = (function() {
       localeObj = Locales.getLocale(AppRate.preferences.useLanguage, AppRate.preferences.displayAppName, AppRate.preferences.customLocale);
 
       if(AppRate.preferences.simpleMode) {
-        navigator.notification.confirm(localeObj.message, promptForStoreRatingWindowButtonClickHandler, localeObj.title, [localeObj.cancelButtonLabel, localeObj.laterButtonLabel, localeObj.rateButtonLabel]);
+	if ( localeObj.cancelButtonLabel ) {
+	  navigator.notification.confirm(localeObj.message, promptForStoreRatingWindowButtonClickHandler, localeObj.title, [localeObj.cancelButtonLabel, localeObj.laterButtonLabel, localeObj.rateButtonLabel]);
+	}
+	else {
+	  navigator.notification.confirm(localeObj.message, promptForStoreRatingWindowButtonClickHandler, localeObj.title, [localeObj.laterButtonLabel, localeObj.rateButtonLabel]);
+	}
       } else {
         navigator.notification.confirm(localeObj.appRatePromptMessage, promptForAppRatingWindowButtonClickHandler, localeObj.appRatePromptTitle, [localeObj.noButtonLabel, localeObj.yesButtonLabel]);
       }
