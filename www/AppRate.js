@@ -68,7 +68,7 @@ AppRate = (function() {
 	  navigator.notification.confirm(localeObj.message, promptForStoreRatingWindowButtonClickHandler, localeObj.title, [localeObj.cancelButtonLabel, localeObj.laterButtonLabel, localeObj.rateButtonLabel])
 	}
     	else {
-          navigator.notification.confirm(localeObj.message, promptForStoreRatingWindowButtonClickHandler, localeObj.title, [localeObj.laterButtonLabel, localeObj.rateButtonLabel])
+          navigator.notification.confirm(localeObj.message, promptForStoreRatingWindowButtonClickHandler, localeObj.title, [localeObj.rateButtonLabel, localeObj.laterButtonLabel])
     	}
         break;
     }
@@ -102,11 +102,11 @@ AppRate = (function() {
 	      case 0:
 		updateCounter('reset');
 		break;
-	      case 1:
+	      case 2:
 		currentBtn = localeObj.laterButtonLabel;
 		updateCounter('reset');
 		break;
-	      case 2:
+	      case 1:
 		currentBtn = localeObj.rateButtonLabel;
 		updateCounter('stop');
 		AppRate.navigateToAppStore();
