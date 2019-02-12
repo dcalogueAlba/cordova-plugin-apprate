@@ -64,11 +64,16 @@ AppRate = (function() {
         break;
       case 2:
         currentBtn = localeObj.yesButtonLabel;
-	if ( localeObj.cancelButtonLabel ) {
-	  navigator.notification.confirm(localeObj.message, promptForStoreRatingWindowButtonClickHandler, localeObj.title, [localeObj.cancelButtonLabel, localeObj.laterButtonLabel, localeObj.rateButtonLabel])
-	}
+    	if ( localeObj.cancelButtonLabel ) {
+          navigator.notification.confirm(localeObj.message, promptForStoreRatingWindowButtonClickHandler, localeObj.title, [localeObj.cancelButtonLabel, localeObj.laterButtonLabel, localeObj.rateButtonLabel])
+    	}
     	else {
-          navigator.notification.confirm(localeObj.message, promptForStoreRatingWindowButtonClickHandler, localeObj.title, [localeObj.rateButtonLabel, localeObj.laterButtonLabel])
+            if ( device && (device.platform == 'Android' || device.platform == 'android') ) {
+                navigator.notification.confirm(localeObj.message, promptForStoreRatingWindowButtonClickHandler, localeObj.title, [localeObj.rateButtonLabel, localeObj.laterButtonLabel])
+            }
+            else {
+                navigator.notification.confirm(localeObj.message, promptForStoreRatingWindowButtonClickHandler, localeObj.title, [localeObj.laterButtonLabel, localeObj.rateButtonLabel])
+            }
     	}
         break;
     }
@@ -80,38 +85,56 @@ AppRate = (function() {
     if ( localeObj.cancelButtonLabel ) {
 	    switch (buttonIndex) {
 	      case 0:
-		updateCounter('reset');
-		break;
+    		updateCounter('reset');
+    		break;
 	      case 1:
-		currentBtn = localeObj.cancelButtonLabel;
-		updateCounter('stop');
-		break;
+    		currentBtn = localeObj.cancelButtonLabel;
+    		updateCounter('stop');
+    		break;
 	      case 2:
-		currentBtn = localeObj.laterButtonLabel;
-		updateCounter('reset');
-		break;
+    		currentBtn = localeObj.laterButtonLabel;
+    		updateCounter('reset');
+    		break;
 	      case 3:
-		currentBtn = localeObj.rateButtonLabel;
-		updateCounter('stop');
-		AppRate.navigateToAppStore();
-		break;
+    		currentBtn = localeObj.rateButtonLabel;
+    		updateCounter('stop');
+    		AppRate.navigateToAppStore();
+    		break;
 	    }
     }
     else {
-	    switch (buttonIndex) {
-	      case 0:
-		updateCounter('reset');
-		break;
-	      case 2:
-		currentBtn = localeObj.laterButtonLabel;
-		updateCounter('reset');
-		break;
-	      case 1:
-		currentBtn = localeObj.rateButtonLabel;
-		updateCounter('stop');
-		AppRate.navigateToAppStore();
-		break;
-	    }
+        if ( device && (device.platform == 'Android' || device.platform == 'android') ) {
+    	    switch (buttonIndex) {
+    	      case 0:
+        		updateCounter('reset');
+        		break;
+    	      case 2:
+        		currentBtn = localeObj.laterButtonLabel;
+        		updateCounter('reset');
+        		break;
+    	      case 1:
+        		currentBtn = localeObj.rateButtonLabel;
+        		updateCounter('stop');
+        		AppRate.navigateToAppStore();
+        		break;
+    	    }
+        }
+        else {
+    	    switch (buttonIndex) {
+    	      case 0:
+        		updateCounter('reset');
+        		break;
+    	      case 1:
+        		currentBtn = localeObj.laterButtonLabel;
+        		updateCounter('reset');
+        		break;
+    	      case 2:
+        		currentBtn = localeObj.rateButtonLabel;
+        		updateCounter('stop');
+        		AppRate.navigateToAppStore();
+        		break;
+    	    }
+        }
     }
     //This is called only in case the user clicked on a button
     typeof base.onButtonClicked === "function" ? base.onButtonClicked(buttonIndex, currentBtn, "StoreRatingPrompt") : function(){ };
@@ -167,25 +190,30 @@ AppRate = (function() {
   };
 
   showDialog = function(immediately) {
-    updateCounter();
-    if (counter.countdown === AppRate.preferences.usesUntilPrompt || immediately) {
-      localeObj = Locales.getLocale(AppRate.preferences.useLanguage, AppRate.preferences.displayAppName, AppRate.preferences.customLocale);
+      updateCounter();
+      if (counter.countdown === AppRate.preferences.usesUntilPrompt || immediately) {
+          localeObj = Locales.getLocale(AppRate.preferences.useLanguage, AppRate.preferences.displayAppName, AppRate.preferences.customLocale);
 
-      if(AppRate.preferences.simpleMode) {
-	if ( localeObj.cancelButtonLabel ) {
-	  navigator.notification.confirm(localeObj.message, promptForStoreRatingWindowButtonClickHandler, localeObj.title, [localeObj.cancelButtonLabel, localeObj.laterButtonLabel, localeObj.rateButtonLabel]);
-	}
-	else {
-	  navigator.notification.confirm(localeObj.message, promptForStoreRatingWindowButtonClickHandler, localeObj.title, [localeObj.rateButtonLabel, localeObj.laterButtonLabel]);
-	}
-      } else {
-        navigator.notification.confirm(localeObj.appRatePromptMessage, promptForAppRatingWindowButtonClickHandler, localeObj.appRatePromptTitle, [localeObj.noButtonLabel, localeObj.yesButtonLabel]);
-      }
+          if(AppRate.preferences.simpleMode) {
+            if ( localeObj.cancelButtonLabel ) {
+              navigator.notification.confirm(localeObj.message, promptForStoreRatingWindowButtonClickHandler, localeObj.title, [localeObj.cancelButtonLabel, localeObj.laterButtonLabel, localeObj.rateButtonLabel]);
+            }
+            else {
+                if ( device && (device.platform == 'Android' || device.platform == 'android') ) {
+                    navigator.notification.confirm(localeObj.message, promptForStoreRatingWindowButtonClickHandler, localeObj.title, [localeObj.rateButtonLabel, localeObj.laterButtonLabel]);
+                }
+                else {
+                    navigator.notification.confirm(localeObj.message, promptForStoreRatingWindowButtonClickHandler, localeObj.title, [localeObj.laterButtonLabel, localeObj.rateButtonLabel]);
+                }
+            }
+        } else {
+            navigator.notification.confirm(localeObj.appRatePromptMessage, promptForAppRatingWindowButtonClickHandler, localeObj.appRatePromptTitle, [localeObj.noButtonLabel, localeObj.yesButtonLabel]);
+        }
 
-      var base = AppRate.preferences.callbacks;
-      if (typeof base.onRateDialogShow === "function") {
-        base.onRateDialogShow(promptForStoreRatingWindowButtonClickHandler);
-      }
+        var base = AppRate.preferences.callbacks;
+        if (typeof base.onRateDialogShow === "function") {
+            base.onRateDialogShow(promptForStoreRatingWindowButtonClickHandler);
+        }
     }
     return AppRate;
   };
